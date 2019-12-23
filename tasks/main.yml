@@ -1,0 +1,20 @@
+---
+- name: Checking swarm status
+  command: docker info
+  register: docker_info
+  changed_when: false
+
+- name: Join existing swarm
+  docker_swarm:
+    state: join
+    advertise_addr: "{{ inventory_hostname }}:2377"
+    join_token: "{{ hostvars['swarm_tokens']['worker'] }}"
+    remote_addrs: [ "{{ groups['manager'][0] }}:2377" ]
+  when: >
+    "Swarm: inactive" in docker_info.stdout and
+    "Swarm: pending" not in docker_info.stdout
+
+- name: Register node id
+  command: docker info -f {% raw %}{{.Swarm.NodeID}}{% endraw %}
+  register: docker_node_id
+  changed_when: false
