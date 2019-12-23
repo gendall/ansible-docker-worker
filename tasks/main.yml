@@ -15,6 +15,6 @@
     "Swarm: pending" not in docker_info.stdout
 
 - name: Register node id
-  command: docker info -f {% raw %}{{.Swarm.NodeID}}{% endraw %}
+  command: docker info -f {% raw %}{{ .Swarm.NodeID }}{% endraw %}
   register: docker_node_id
   changed_when: false
